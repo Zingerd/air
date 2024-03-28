@@ -60,4 +60,29 @@ ENTRYPOINT ["java", "-jar", "app.jar"]
 # SETUP SQL
    #### *When running docker-compose, it automatically creates a DB and all necessary tables with pre-filled test data located in* 
     /data/initTable.sql folder
+```
+docker exec -it air-mysql-1 mysql -uroot -p
+Enter password:123456
+mysql> SHOW DATABASES;
++--------------------+
+| Database           |
++--------------------+
+| air_companies      |
+| information_schema |
+| mysql              |
+| performance_schema |
+| sys                |
++--------------------+
+```
+```
+mysql> use air_companies;
+mysql> SHOW TABLES;
++-------------------------+
+| Tables_in_air_companies |
++-------------------------+
+| air_company             |
+| airplane                |
+| flight                  |
++-------------------------+
+```
 
