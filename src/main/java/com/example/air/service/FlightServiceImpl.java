@@ -4,6 +4,7 @@ package com.example.air.service;
 import com.example.air.dto.rq.FlightDtoRQ;
 import com.example.air.entity.Flight;
 import com.example.air.repository.FlightRepository;
+import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +17,7 @@ import static com.example.air.tools.Constant.*;
 
 
 @Service
+@Log4j2
 public class FlightServiceImpl {
     private final FlightRepository flightRepository;
 
@@ -27,12 +29,14 @@ public class FlightServiceImpl {
     }
 
     public List<FlightDtoRQ> findActiveFlights() {
+        log.info("findActiveFlights");
         List<Flight> flights = flightRepository.findAllByFlightStatusAndStartedAtBefore(ACTIVE, new Date(System.currentTimeMillis() - 24 * 60 * 60 * 1000));
 
         return convertToDtoFlight(flights);
     }
 
     public FlightDtoRQ addFlight(Flight flight) {
+        log.info("addFlight");
         return convertToDtoFlight(flightRepository.save(flight));
     }
 
@@ -61,6 +65,7 @@ public class FlightServiceImpl {
 
 
     public List<FlightDtoRQ> getCompletedFlightsWithTimeDifference() {
+        log.info("getCompletedFlightsWithTimeDifference");
         List<Flight> completedFlights = flightRepository.findAllByFlightStatus(COMPLETED);
         List<Flight> resultFlights = new ArrayList<>();
 
@@ -85,13 +90,13 @@ public class FlightServiceImpl {
         return (hours * 3600L + minutes * 60L + seconds) * 1000;
     }
 
-    public List<FlightDtoRQ> convertToDtoFlight(List<Flight> flights) {
+    private List<FlightDtoRQ> convertToDtoFlight(List<Flight> flights) {
         return flights.stream()
                 .map(flight -> modelMapper.map(flight, FlightDtoRQ.class))
                 .collect(Collectors.toList());
     }
 
-    public FlightDtoRQ convertToDtoFlight(Flight flight) {
+    private FlightDtoRQ convertToDtoFlight(Flight flight) {
         return modelMapper.map(flight, FlightDtoRQ.class);
     }
 }

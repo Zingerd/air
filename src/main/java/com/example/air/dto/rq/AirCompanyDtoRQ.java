@@ -2,7 +2,6 @@ package com.example.air.dto.rq;
 
 import lombok.Data;
 
-
 import java.util.Date;
 
 @Data

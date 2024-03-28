@@ -4,7 +4,6 @@ package com.example.air.controller;
 import com.example.air.dto.rq.FlightDtoRQ;
 import com.example.air.entity.Flight;
 import com.example.air.service.FlightServiceImpl;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

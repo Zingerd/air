@@ -5,11 +5,13 @@ import com.example.air.entity.AirCompany;
 import com.example.air.entity.Airplane;
 import com.example.air.repository.AirCompanyRepository;
 import com.example.air.repository.AirplaneRepository;
+import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 
 @Service
+@Log4j2
 public class AirplaneServiceImpl {
     private final AirplaneRepository airplaneRepository;
     private final AirCompanyRepository airCompanyRepository;
@@ -23,10 +25,12 @@ public class AirplaneServiceImpl {
     }
 
     public AirplaneDtoRQ addAirplane(Airplane airplane) {
+        log.info("addAirplane");
         return convertToDtoAirplane(airplaneRepository.save(airplane));
     }
 
     public String moveAirplaneToCompany(Long airplaneId, Long companyId) {
+        log.info("moveAirplaneToCompany");
         Airplane airplane = airplaneRepository.findById(airplaneId).orElseThrow();
         AirCompany airCompanyNew = airCompanyRepository.findById(companyId).orElseThrow();
 
@@ -37,7 +41,7 @@ public class AirplaneServiceImpl {
                 ", with ID:" + companyId;
     }
 
-    public AirplaneDtoRQ convertToDtoAirplane(Airplane airplane) {
+    private AirplaneDtoRQ convertToDtoAirplane(Airplane airplane) {
         return modelMapper.map(airplane, AirplaneDtoRQ.class);
     }
 }
