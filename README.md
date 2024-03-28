@@ -1,4 +1,6 @@
 # SETUP PROJECT
+      Java 11
+      Spring Boot 2.2
 #### 1. Download the project
  * git clone https://github.com/Zingerd/air.git
 #### 2. Find in project file air/docker-compose.yml  and use this command
