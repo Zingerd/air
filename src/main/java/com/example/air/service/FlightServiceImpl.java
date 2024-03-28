@@ -1,15 +1,16 @@
 package com.example.air.service;
 
 
+import com.example.air.dto.rq.FlightDtoRQ;
 import com.example.air.entity.Flight;
 import com.example.air.repository.FlightRepository;
-import org.springframework.http.ResponseEntity;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.example.air.tools.Constant.*;
 
@@ -18,50 +19,48 @@ import static com.example.air.tools.Constant.*;
 public class FlightServiceImpl {
     private final FlightRepository flightRepository;
 
-    public FlightServiceImpl(FlightRepository flightRepository) {
+    private final ModelMapper modelMapper;
+
+    public FlightServiceImpl(FlightRepository flightRepository, ModelMapper modelMapper) {
         this.flightRepository = flightRepository;
+        this.modelMapper = modelMapper;
     }
 
-    public List<Flight> findActiveFlights() {
-        return flightRepository.findAllByFlightStatusAndStartedAtBefore(ACTIVE, new Date(System.currentTimeMillis() - 24 * 60 * 60 * 1000));
+    public List<FlightDtoRQ> findActiveFlights() {
+        List<Flight> flights = flightRepository.findAllByFlightStatusAndStartedAtBefore(ACTIVE, new Date(System.currentTimeMillis() - 24 * 60 * 60 * 1000));
+
+        return convertToDtoFlight(flights);
     }
 
-    public Flight addFlight(Flight flight) {
-         return flightRepository.save(flight);
+    public FlightDtoRQ addFlight(Flight flight) {
+        return convertToDtoFlight(flightRepository.save(flight));
     }
 
-    public ResponseEntity<Flight> changeFlightStatus(Long flightId, String status) {
-        Optional<Flight> flightOptional = flightRepository.findById(flightId);
+    public FlightDtoRQ changeFlightStatus(Long flightId, String status) throws Exception {
+        Flight flight = flightRepository.findById(flightId).orElseThrow();
 
-        if (flightOptional.isPresent()) {
-            Flight flight = flightOptional.get();
-
-            switch (status) {
-                case DELAYED:
-                    flight.setFlightStatus(DELAYED);
-                    flight.setDelayStartedAt(new Date());
-                    break;
-                case ACTIVE:
-                    flight.setFlightStatus(ACTIVE);
-                    flight.setStartedAt(new Date());
-                    break;
-                case COMPLETED:
-                    flight.setFlightStatus(COMPLETED);
-                    flight.setEndedAt(new Date());
-                    break;
-                default:
-                    return ResponseEntity.badRequest().build();
-            }
-
-            flightRepository.save(flight);
-            return ResponseEntity.ok(flight);
-        } else {
-            return ResponseEntity.notFound().build();
+        switch (status) {
+            case DELAYED:
+                flight.setFlightStatus(DELAYED);
+                flight.setDelayStartedAt(new Date());
+                break;
+            case ACTIVE:
+                flight.setFlightStatus(ACTIVE);
+                flight.setStartedAt(new Date());
+                break;
+            case COMPLETED:
+                flight.setFlightStatus(COMPLETED);
+                flight.setEndedAt(new Date());
+                break;
+            default:
+                throw new Exception();
         }
+        flightRepository.save(flight);
+        return convertToDtoFlight(flight);
     }
 
 
-    public List<Flight> getCompletedFlightsWithTimeDifference() {
+    public List<FlightDtoRQ> getCompletedFlightsWithTimeDifference() {
         List<Flight> completedFlights = flightRepository.findAllByFlightStatus(COMPLETED);
         List<Flight> resultFlights = new ArrayList<>();
 
@@ -73,7 +72,7 @@ public class FlightServiceImpl {
                 resultFlights.add(flight);
             }
         }
-        return resultFlights;
+        return convertToDtoFlight(resultFlights);
     }
 
 
@@ -84,5 +83,15 @@ public class FlightServiceImpl {
         int seconds = Integer.parseInt(parts[2]);
 
         return (hours * 3600L + minutes * 60L + seconds) * 1000;
+    }
+
+    public List<FlightDtoRQ> convertToDtoFlight(List<Flight> flights) {
+        return flights.stream()
+                .map(flight -> modelMapper.map(flight, FlightDtoRQ.class))
+                .collect(Collectors.toList());
+    }
+
+    public FlightDtoRQ convertToDtoFlight(Flight flight) {
+        return modelMapper.map(flight, FlightDtoRQ.class);
     }
 }

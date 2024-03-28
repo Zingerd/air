@@ -5,6 +5,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.Date;
+
 @Table
 @Entity(name = "airplane")
 @Getter

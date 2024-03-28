@@ -1,9 +1,8 @@
 package com.example.air.controller;
 
+import com.example.air.dto.rq.AirCompanyDtoRQ;
 import com.example.air.entity.AirCompany;
 import com.example.air.service.AirCompaniesServiceImpl;
-import com.example.air.tools.ExceptionHandler;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,40 +20,27 @@ public class AirCompanyController {
     //TODO:
     // Simple CRUD operations for an Air company entity;
     @GetMapping
-    public ResponseEntity<List<AirCompany>> getAllAirCompanies() {
-        List<AirCompany> airCompanies = airCompanyService.getAllAirCompanies();
-        return ResponseEntity.ok(airCompanies);
+    public List<AirCompanyDtoRQ> getAllAirCompanies() {
+        return airCompanyService.getAllAirCompanies();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<AirCompany> getAirCompanyById(@PathVariable Long id) throws ExceptionHandler {
-        AirCompany airCompany = airCompanyService.getAirCompanyById(id);
-        if (airCompany != null) {
-            return ResponseEntity.ok(airCompany);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+    public AirCompanyDtoRQ getAirCompanyById(@PathVariable Long id) {
+        return airCompanyService.getAirCompanyById(id);
     }
 
     @PostMapping
-    public ResponseEntity<AirCompany> createAirCompany(@RequestBody AirCompany airCompany) {
-        AirCompany createdAirCompany = airCompanyService.createAirCompany(airCompany);
-        return ResponseEntity.ok(createdAirCompany);
+    public AirCompanyDtoRQ createAirCompany(@RequestBody AirCompany airCompany) {
+        return airCompanyService.createAirCompany(airCompany);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<AirCompany> updateAirCompany(@PathVariable Long id, @RequestBody AirCompany updatedAirCompany) {
-        AirCompany airCompany = airCompanyService.updateAirCompany(id, updatedAirCompany);
-        if (airCompany != null) {
-            return ResponseEntity.ok(airCompany);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+    public AirCompanyDtoRQ updateAirCompany(@PathVariable Long id, @RequestBody AirCompany updatedAirCompany) {
+        return airCompanyService.updateAirCompany(id, updatedAirCompany);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteAirCompany(@PathVariable Long id) {
+    public void deleteAirCompany(@PathVariable Long id) {
         airCompanyService.deleteAirCompany(id);
-        return ResponseEntity.noContent().build();
     }
 }

@@ -5,8 +5,9 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.Date;
+
 @Table
-@Entity(name = "flight" )
+@Entity(name = "flight")
 @Getter
 @Setter
 public class Flight {

@@ -1,6 +1,7 @@
 package com.example.air.controller;
 
 
+import com.example.air.dto.rq.FlightDtoRQ;
 import com.example.air.entity.Flight;
 import com.example.air.service.FlightServiceImpl;
 import org.springframework.http.ResponseEntity;
@@ -21,17 +22,15 @@ public class FlightController {
     // TODO:
     //  Endpoint to find all Flights in ACTIVE status and started more than 24 hours ago
     @GetMapping("/active")
-    public ResponseEntity<List<Flight>> findActiveFlights() {
-        List<Flight> activeFlights = flightService.findActiveFlights();
-        return ResponseEntity.ok(activeFlights);
+    public List<FlightDtoRQ> findActiveFlights() {
+        return flightService.findActiveFlights();
     }
 
     // TODO:
     //  Endpoint to add new Flight (set status to PENDING)
     @PostMapping("/add")
-    public ResponseEntity<Flight> addFlight(@RequestBody Flight flight) {
-        Flight savedFlight = flightService.addFlight(flight);
-        return ResponseEntity.ok(savedFlight);
+    public FlightDtoRQ addFlight(@RequestBody Flight flight) {
+        return flightService.addFlight(flight);
     }
 
     // TODO:
@@ -40,7 +39,7 @@ public class FlightController {
     //  if status to change is ACTIVE – set started at
     //  if status to change is COMPLETED – set ended at
     @PutMapping("/{flightId}/change-status/{status}")
-    public ResponseEntity<Flight> changeFlightStatus(@PathVariable Long flightId, @PathVariable String status) {
+    public FlightDtoRQ changeFlightStatus(@PathVariable Long flightId, @PathVariable String status) throws Exception {
         return flightService.changeFlightStatus(flightId, status);
     }
 
@@ -48,8 +47,8 @@ public class FlightController {
     //  Endpoint to find all Flights in COMPLETED status and difference between
     //  started and ended time is bigger than the estimated flight time
     @GetMapping("/completed-flights")
-    public ResponseEntity<List<Flight>> getCompletedFlightsWithTimeDifference() {
-        return ResponseEntity.ok(flightService.getCompletedFlightsWithTimeDifference());
+    public List<FlightDtoRQ> getCompletedFlightsWithTimeDifference() {
+        return flightService.getCompletedFlightsWithTimeDifference();
     }
 
 
