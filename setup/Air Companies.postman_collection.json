@@ -15,7 +15,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8080/api/air/companies/3",
+							"raw": "http://localhost:8080/api/air/companies/2",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -25,7 +25,7 @@
 								"api",
 								"air",
 								"companies",
-								"3"
+								"2"
 							],
 							"query": [
 								{
@@ -74,7 +74,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:8080/api/air/companies",
+							"raw": "http://localhost:8080/api/air/companies/",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -83,7 +83,8 @@
 							"path": [
 								"api",
 								"air",
-								"companies"
+								"companies",
+								""
 							]
 						}
 					},
@@ -104,7 +105,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:8080/api/air/companies/4",
+							"raw": "http://localhost:8080/api/air/companies/2",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -114,7 +115,7 @@
 								"api",
 								"air",
 								"companies",
-								"4"
+								"2"
 							]
 						}
 					},
@@ -160,7 +161,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n  \"name\": \"Ne\",\r\n  \"factorySerialNumber\": \"Factory Serial Number\",\r\n  \"airCompany\": {\r\n    \"id\": 1\r\n  },\r\n  \"numberOfFlights\": 0,\r\n  \"flightDistance\": 0.0,\r\n  \"fuelCapacity\": 0.0,\r\n  \"type\": \"Airplane Type\",\r\n   \"createdAt\": \"2024-01-01\"\r\n}",
+					"raw": "{\r\n  \"name\": \"Ne\",\r\n  \"factorySerialNumber\": \"SASAr\",\r\n  \"airCompanyId\" : 1,\r\n  \"numberOfFlights\": 0,\r\n  \"flightDistance\": 0.0,\r\n  \"fuelCapacity\": 0.0,\r\n  \"type\": \"Airplane Type\",\r\n   \"createdAt\": \"2024-01-01\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -186,11 +187,11 @@
 		{
 			"name": "Move airplanes between companies",
 			"request": {
-				"method": "PUT",
+				"method": "POST",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "",
+					"raw": "{\r\n    \"airplaneId\" : 1,\r\n    \"companyId\" : 2\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -198,7 +199,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8080/api/airplanes/1/move/2",
+					"raw": "http://localhost:8080/api/airplanes/move/",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -207,9 +208,8 @@
 					"path": [
 						"api",
 						"airplanes",
-						"1",
 						"move",
-						"2"
+						""
 					]
 				}
 			},
@@ -221,7 +221,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/api/companies/FLY/flights?status=ACTIVE",
+					"raw": "http://localhost:8080/api/companies/ABY/flights/ACTIVE",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -230,14 +230,9 @@
 					"path": [
 						"api",
 						"companies",
-						"FLY",
-						"flights"
-					],
-					"query": [
-						{
-							"key": "status",
-							"value": "ACTIVE"
-						}
+						"ABY",
+						"flights",
+						"ACTIVE"
 					]
 				}
 			},
@@ -271,7 +266,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"flightStatus\": \"PENDING\",\r\n    \"airCompany\": {\r\n        \"id\": 1\r\n    },\r\n    \"airplane\": {\r\n        \"id\": 2\r\n    },\r\n    \"departureCountry\": \"Country1\",\r\n    \"destinationCountry\": \"Country2\",\r\n    \"distance\": 1000,\r\n    \"estimatedFlightTime\": \"02:00:00\",\r\n    \"startedAt\": null,\r\n    \"endedAt\": null,\r\n    \"delayStartedAt\": null,\r\n    \"createdAt\": null\r\n}",
+					"raw": "{\r\n    \"flightStatus\": \"PENDING\",\r\n    \"airCompanyId\": 1,\r\n    \"airplaneId\": 2,\r\n    \"departureCountry\": \"Country1\",\r\n    \"destinationCountry\": \"Country2\",\r\n    \"distance\": 1000,\r\n    \"estimatedFlightTime\": \"12:00:00\",\r\n    \"startedAt\": \"2024-03-27T10:00:00\",\r\n    \"endedAt\": \"2024-03-27T22:00:00\",\r\n    \"delayStartedAt\": null,\r\n    \"createdAt\": \"2024-03-27T08:00:00\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -297,10 +292,19 @@
 		{
 			"name": "Сhange Flight status",
 			"request": {
-				"method": "PUT",
+				"method": "POST",
 				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"flightId\": 2,\r\n    \"statusFlight\": \"ACTIVE\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
 				"url": {
-					"raw": "http://localhost:8080/api/flights/1/change-status/DELAYED",
+					"raw": "http://localhost:8080/api/flights/change-status",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -309,9 +313,7 @@
 					"path": [
 						"api",
 						"flights",
-						"1",
-						"change-status",
-						"DELAYED"
+						"change-status"
 					]
 				}
 			},

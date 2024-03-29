@@ -1,9 +1,12 @@
-package com.example.air.service;
+package com.example.air.service.impl;
 
 
+import com.example.air.dto.rq.ChangeStatusFlightRq;
 import com.example.air.dto.rq.FlightDtoRQ;
 import com.example.air.entity.Flight;
 import com.example.air.repository.FlightRepository;
+import com.example.air.service.FlightService;
+import javassist.NotFoundException;
 import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -13,12 +16,15 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.example.air.tools.Constant.*;
+import static com.example.air.tools.StatusFlightEnum.*;
 
 
 @Service
 @Log4j2
-public class FlightServiceImpl {
+public class FlightServiceImpl implements FlightService {
+    public static final String DELAYED_STATUS = "DELAYED";
+    public static final String ACTIVE_STATUS = "ACTIVE";
+    public static final String COMPLETED_STATUS = "COMPLETED";
     private final FlightRepository flightRepository;
 
     private final ModelMapper modelMapper;
@@ -28,45 +34,52 @@ public class FlightServiceImpl {
         this.modelMapper = modelMapper;
     }
 
+    @Override
     public List<FlightDtoRQ> findActiveFlights() {
         log.info("findActiveFlights");
-        List<Flight> flights = flightRepository.findAllByFlightStatusAndStartedAtBefore(ACTIVE, new Date(System.currentTimeMillis() - 24 * 60 * 60 * 1000));
+        List<Flight> flights = flightRepository.findAllByFlightStatusAndStartedAtBefore(ACTIVE.name(),
+                new Date(System.currentTimeMillis() - 24 * 60 * 60 * 1000)).orElseThrow();
 
         return convertToDtoFlight(flights);
     }
 
-    public FlightDtoRQ addFlight(Flight flight) {
+    @Override
+    public FlightDtoRQ addFlight(FlightDtoRQ flight) {
         log.info("addFlight");
-        return convertToDtoFlight(flightRepository.save(flight));
+        return convertToDtoFlight(flightRepository.save(convertToEntytyFlight(flight)));
     }
 
-    public FlightDtoRQ changeFlightStatus(Long flightId, String status) throws Exception {
-        Flight flight = flightRepository.findById(flightId).orElseThrow();
+    @Override
+    public FlightDtoRQ changeFlightStatus(ChangeStatusFlightRq rq) throws Exception {
+        Flight flight = flightRepository.findById(rq.getFlightId())
+                .orElseThrow(() -> new NotFoundException("Flight not found"));
 
-        switch (status) {
-            case DELAYED:
-                flight.setFlightStatus(DELAYED);
+        switch (rq.getStatusFlight()) {
+            case DELAYED_STATUS:
+                flight.setFlightStatus(DELAYED.name());
                 flight.setDelayStartedAt(new Date());
                 break;
-            case ACTIVE:
-                flight.setFlightStatus(ACTIVE);
+            case ACTIVE_STATUS:
+                flight.setFlightStatus(ACTIVE.name());
                 flight.setStartedAt(new Date());
                 break;
-            case COMPLETED:
-                flight.setFlightStatus(COMPLETED);
+            case COMPLETED_STATUS:
+                flight.setFlightStatus(COMPLETED.name());
                 flight.setEndedAt(new Date());
                 break;
             default:
-                throw new Exception();
+                throw new NotFoundException("Incorrect Flight status");
         }
         flightRepository.save(flight);
         return convertToDtoFlight(flight);
     }
 
-
+    @Override
     public List<FlightDtoRQ> getCompletedFlightsWithTimeDifference() {
         log.info("getCompletedFlightsWithTimeDifference");
-        List<Flight> completedFlights = flightRepository.findAllByFlightStatus(COMPLETED);
+        List<Flight> completedFlights = flightRepository.findAllByFlightStatus(COMPLETED.name())
+                .orElseThrow();
+
         List<Flight> resultFlights = new ArrayList<>();
 
         for (Flight flight : completedFlights) {
@@ -98,5 +111,9 @@ public class FlightServiceImpl {
 
     private FlightDtoRQ convertToDtoFlight(Flight flight) {
         return modelMapper.map(flight, FlightDtoRQ.class);
+    }
+
+    private Flight convertToEntytyFlight(FlightDtoRQ flight) {
+        return modelMapper.map(flight, Flight.class);
     }
 }

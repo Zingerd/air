@@ -1,17 +1,17 @@
 package com.example.air.tools;
 
-import lombok.Builder;
+import lombok.Getter;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.client.HttpStatusCodeException;
 
-import javax.management.OperationsException;
+@Getter
+public class ExceptionHandler extends HttpStatusCodeException {
+    private final String message;
+    private final HttpStatus status;
 
-public class ExceptionHandler extends OperationsException {
-    Integer code;
-    Integer name;
-
-
-    public ExceptionHandler(String name) {
-        super(name);
-    }
-    public ExceptionHandler() {
+    public ExceptionHandler(HttpStatus status, String message) {
+        super(status, message);
+        this.message = message;
+        this.status = status;
     }
 }

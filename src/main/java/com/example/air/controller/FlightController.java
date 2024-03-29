@@ -1,12 +1,15 @@
 package com.example.air.controller;
 
 
+import com.example.air.dto.rq.ChangeStatusFlightRq;
 import com.example.air.dto.rq.FlightDtoRQ;
-import com.example.air.entity.Flight;
-import com.example.air.service.FlightServiceImpl;
+import com.example.air.service.impl.FlightServiceImpl;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
+import static com.example.air.tools.ValidatorHandler.validChangeStatusFlightRq;
+import static com.example.air.tools.ValidatorHandler.validFlightDtoRq;
 
 @RestController
 @RequestMapping("/api/flights")
@@ -28,7 +31,8 @@ public class FlightController {
     // TODO:
     //  Endpoint to add new Flight (set status to PENDING)
     @PostMapping("/add")
-    public FlightDtoRQ addFlight(@RequestBody Flight flight) {
+    public FlightDtoRQ addFlight(@RequestBody FlightDtoRQ flight) {
+        validFlightDtoRq(flight);
         return flightService.addFlight(flight);
     }
 
@@ -37,9 +41,10 @@ public class FlightController {
     //  if status to change is DELAYED – set delay started at
     //  if status to change is ACTIVE – set started at
     //  if status to change is COMPLETED – set ended at
-    @PutMapping("/{flightId}/change-status/{status}")
-    public FlightDtoRQ changeFlightStatus(@PathVariable Long flightId, @PathVariable String status) throws Exception {
-        return flightService.changeFlightStatus(flightId, status);
+    @PostMapping("/change-status")
+    public FlightDtoRQ changeFlightStatus(@RequestBody ChangeStatusFlightRq rq) throws Exception {
+        validChangeStatusFlightRq(rq);
+        return flightService.changeFlightStatus(rq);
     }
 
     // TODO:

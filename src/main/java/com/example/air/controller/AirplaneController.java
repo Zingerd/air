@@ -2,9 +2,12 @@ package com.example.air.controller;
 
 
 import com.example.air.dto.rq.AirplaneDtoRQ;
-import com.example.air.entity.Airplane;
-import com.example.air.service.AirplaneServiceImpl;
+import com.example.air.dto.rq.MoveAirplaneToCompanyDtoRq;
+import com.example.air.service.impl.AirplaneServiceImpl;
 import org.springframework.web.bind.annotation.*;
+
+import static com.example.air.tools.ValidatorHandler.validMoveAirplaneToCompanyDtoRq;
+import static com.example.air.tools.ValidatorHandler.validatorAirplaneDtoRq;
 
 @RestController
 @RequestMapping("/api/airplanes")
@@ -19,16 +22,17 @@ public class AirplaneController {
     // TODO:
     //  Endpoint to add new Airplane
     @PostMapping("/add")
-    public AirplaneDtoRQ addAirplane(@RequestBody Airplane airplane) {
-
+    public AirplaneDtoRQ addAirplane(@RequestBody AirplaneDtoRQ airplane) {
+        validatorAirplaneDtoRq(airplane);
         return airplaneService.addAirplane(airplane);
     }
 
     // TODO:
     //  Endpoint to move airplanes between companies (simple endpoint to reassign airplane
     //  to another company)
-    @PutMapping("/{airplaneId}/move/{companyId}")
-    public String moveAirplaneToCompany(@PathVariable Long airplaneId, @PathVariable Long companyId) {
-        return airplaneService.moveAirplaneToCompany(airplaneId, companyId);
+    @PostMapping("/move")
+    public String moveAirplaneToCompany(@RequestBody MoveAirplaneToCompanyDtoRq rq) {
+        validMoveAirplaneToCompanyDtoRq(rq);
+        return airplaneService.moveAirplaneToCompany(rq);
     }
 }
