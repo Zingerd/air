@@ -14,9 +14,14 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import static com.example.air.tools.StatusFlightEnum.*;
+import static com.example.air.tools.ConvertorObjects.convertToDtoFlight;
+import static com.example.air.tools.ConvertorObjects.convertToDtoFlightList;
+import static com.example.air.tools.ConvertorObjects.convertToEntytyFlight;
+import static com.example.air.tools.ExceptionHandler.exceptionHandlerRequest;
+import static com.example.air.tools.StatusFlightEnum.ACTIVE;
+import static com.example.air.tools.StatusFlightEnum.COMPLETED;
+import static com.example.air.tools.StatusFlightEnum.DELAYED;
 
 
 @Service
@@ -37,57 +42,65 @@ public class FlightServiceImpl implements FlightService {
         List<Flight> flights = flightRepository.findAllByFlightStatusAndStartedAtBefore(ACTIVE.name(),
                 new Date(System.currentTimeMillis() - 24 * 60 * 60 * 1000)).orElseThrow();
 
-        return convertToDtoFlight(flights);
+        return convertToDtoFlightList(flights, modelMapper);
     }
 
     @Override
     public FlightDtoRQ addFlight(FlightDtoRQ flight) {
         log.info("addFlight");
-        return convertToDtoFlight(flightRepository.save(convertToEntytyFlight(flight)));
+        return convertToDtoFlight(flightRepository.save(convertToEntytyFlight(flight, modelMapper)), modelMapper);
     }
 
     @Override
-    public FlightDtoRQ changeFlightStatus(ChangeStatusFlightRq rq) throws Exception {
-        Flight flight = flightRepository.findById(rq.getFlightId())
-                .orElseThrow(() -> new NotFoundException("Flight not found"));
+    public FlightDtoRQ changeFlightStatus(ChangeStatusFlightRq rq) {
+        try {
+            Flight flight = flightRepository.findById(rq.getFlightId())
+                    .orElseThrow(() -> new NotFoundException("Flight not found"));
 
-        switch (rq.getStatusFlight()) {
-            case DELAYED:
-                flight.setFlightStatus(DELAYED.name());
-                flight.setDelayStartedAt(new Date());
-                break;
-            case ACTIVE:
-                flight.setFlightStatus(ACTIVE.name());
-                flight.setStartedAt(new Date());
-                break;
-            case COMPLETED:
-                flight.setFlightStatus(COMPLETED.name());
-                flight.setEndedAt(new Date());
-                break;
-            default:
-                throw new NotFoundException("Incorrect Flight status");
+            switch (rq.getStatusFlight()) {
+                case DELAYED:
+                    flight.setFlightStatus(DELAYED.name());
+                    flight.setDelayStartedAt(new Date());
+                    break;
+                case ACTIVE:
+                    flight.setFlightStatus(ACTIVE.name());
+                    flight.setStartedAt(new Date());
+                    break;
+                case COMPLETED:
+                    flight.setFlightStatus(COMPLETED.name());
+                    flight.setEndedAt(new Date());
+                    break;
+                default:
+                    throw new NotFoundException("Incorrect Flight status");
+            }
+            flightRepository.save(flight);
+            return convertToDtoFlight(flight, modelMapper);
+        } catch (Exception e) {
+            throw exceptionHandlerRequest(e);
         }
-        flightRepository.save(flight);
-        return convertToDtoFlight(flight);
     }
 
     @Override
     public List<FlightDtoRQ> getCompletedFlightsWithTimeDifference() {
-        log.info("getCompletedFlightsWithTimeDifference");
-        List<Flight> completedFlights = flightRepository.findAllByFlightStatus(COMPLETED.name())
-                .orElseThrow();
+        try {
+            log.info("getCompletedFlightsWithTimeDifference");
+            List<Flight> completedFlights = flightRepository.findAllByFlightStatus(COMPLETED.name())
+                    .orElseThrow();
 
-        List<Flight> resultFlights = new ArrayList<>();
+            List<Flight> resultFlights = new ArrayList<>();
 
-        for (Flight flight : completedFlights) {
-            long estimatedFlightTimeMillis = convertTimeToMillis(flight.getEstimatedFlightTime());
-            long differenceMillis = flight.getEndedAt().getTime() - flight.getStartedAt().getTime();
+            for (Flight flight : completedFlights) {
+                long estimatedFlightTimeMillis = convertTimeToMillis(flight.getEstimatedFlightTime());
+                long differenceMillis = flight.getEndedAt().getTime() - flight.getStartedAt().getTime();
 
-            if (differenceMillis > estimatedFlightTimeMillis) {
-                resultFlights.add(flight);
+                if (differenceMillis > estimatedFlightTimeMillis) {
+                    resultFlights.add(flight);
+                }
             }
+            return convertToDtoFlightList(resultFlights, modelMapper);
+        } catch (Exception e) {
+            throw exceptionHandlerRequest(e);
         }
-        return convertToDtoFlight(resultFlights);
     }
 
 
@@ -98,19 +111,5 @@ public class FlightServiceImpl implements FlightService {
         int seconds = Integer.parseInt(parts[2]);
 
         return (hours * 3600L + minutes * 60L + seconds) * 1000;
-    }
-
-    private List<FlightDtoRQ> convertToDtoFlight(List<Flight> flights) {
-        return flights.stream()
-                .map(flight -> modelMapper.map(flight, FlightDtoRQ.class))
-                .collect(Collectors.toList());
-    }
-
-    private FlightDtoRQ convertToDtoFlight(Flight flight) {
-        return modelMapper.map(flight, FlightDtoRQ.class);
-    }
-
-    private Flight convertToEntytyFlight(FlightDtoRQ flight) {
-        return modelMapper.map(flight, Flight.class);
     }
 }

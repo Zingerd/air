@@ -1,17 +1,24 @@
 package com.example.air.tools;
 
 
-import com.example.air.dto.rq.*;
+import com.example.air.dto.rq.AirCompanyDtoRQ;
+import com.example.air.dto.rq.AirplaneDtoRQ;
+import com.example.air.dto.rq.ChangeStatusFlightRq;
+import com.example.air.dto.rq.FlightDtoRQ;
+import com.example.air.dto.rq.MoveAirplaneToCompanyDtoRq;
 
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-import static com.example.air.tools.StatusFlightEnum.*;
+import static com.example.air.tools.StatusFlightEnum.ACTIVE;
+import static com.example.air.tools.StatusFlightEnum.COMPLETED;
+import static com.example.air.tools.StatusFlightEnum.DELAYED;
+import static com.example.air.tools.StatusFlightEnum.PENDING;
 
 public class ValidatorHandler {
 
-    private static final Set<String > STATUS_FLING = new HashSet<>(Set.of(DELAYED.name(),ACTIVE.name(), PENDING.name(), COMPLETED.name()));
+    private static final Set<String> STATUS_FLING = new HashSet<>(Set.of(DELAYED.name(), ACTIVE.name(), PENDING.name(), COMPLETED.name()));
 
     public static void validatorAirCompanyDtoRq(AirCompanyDtoRQ rq) {
         Objects.requireNonNull(rq, "AirCompanyDtoRQ must not be null");
@@ -59,7 +66,7 @@ public class ValidatorHandler {
         Objects.requireNonNull(rq, "ChangeStatusFlightRq must not be null");
         Objects.requireNonNull(rq.getFlightId(), "flightId must not be null");
         Objects.requireNonNull(rq.getStatusFlight(), "statusFlight must not be null");
-        if(!STATUS_FLING.contains(rq.getStatusFlight().getStatus())) {
+        if (!STATUS_FLING.contains(rq.getStatusFlight().getStatus())) {
             throw new IllegalArgumentException("Invalid value for statusFlight, " +
                     "please use these status values [DELAYED, ACTIVE, PENDING, COMPLETED]");
         }

@@ -4,7 +4,10 @@ package com.example.air.controller;
 import com.example.air.dto.rq.AirplaneDtoRQ;
 import com.example.air.dto.rq.MoveAirplaneToCompanyDtoRq;
 import com.example.air.service.impl.AirplaneServiceImpl;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import static com.example.air.tools.ValidatorHandler.validMoveAirplaneToCompanyDtoRq;
 import static com.example.air.tools.ValidatorHandler.validatorAirplaneDtoRq;

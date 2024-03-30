@@ -5,5 +5,6 @@ import com.example.air.dto.rq.MoveAirplaneToCompanyDtoRq;
 
 public interface AirplaneService {
     AirplaneDtoRQ addAirplane(AirplaneDtoRQ airplane);
+
     String moveAirplaneToCompany(MoveAirplaneToCompanyDtoRq rq);
 }

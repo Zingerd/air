@@ -7,7 +7,10 @@ import java.util.List;
 
 public interface FlightService {
     List<FlightDtoRQ> findActiveFlights();
+
     FlightDtoRQ addFlight(FlightDtoRQ flight);
+
     FlightDtoRQ changeFlightStatus(ChangeStatusFlightRq rq) throws Exception;
+
     List<FlightDtoRQ> getCompletedFlightsWithTimeDifference();
 }

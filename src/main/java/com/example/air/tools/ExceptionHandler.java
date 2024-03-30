@@ -1,11 +1,11 @@
 package com.example.air.tools;
 
-import lombok.Getter;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.client.HttpStatusCodeException;
+import org.springframework.web.server.ResponseStatusException;
 
-@Getter
-public class ExceptionHandler extends HttpStatusCodeException {
+import javax.persistence.EntityNotFoundException;
+
+public class ExceptionHandler extends ResponseStatusException {
     private final String message;
     private final HttpStatus status;
 
@@ -13,5 +13,13 @@ public class ExceptionHandler extends HttpStatusCodeException {
         super(status, message);
         this.message = message;
         this.status = status;
+    }
+
+    public static EntityNotFoundException exceptionHandlerRequest(Exception e) {
+        if (e instanceof EntityNotFoundException) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        } else {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error");
+        }
     }
 }
