@@ -1,5 +1,6 @@
 package com.example.air.dto.rq;
 
+import com.example.air.tools.StatusFlightEnum;
 import lombok.Data;
 
 import java.util.Date;
@@ -8,7 +9,7 @@ import java.util.Date;
 public class FlightDtoRQ {
 
     private Long id;
-    private String flightStatus;
+    private StatusFlightEnum flightStatus;
     private Long airCompanyId;
     private Long airplaneId;
     private String departureCountry;

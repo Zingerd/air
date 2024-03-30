@@ -3,13 +3,15 @@ package com.example.air.tools;
 
 import com.example.air.dto.rq.*;
 
-import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
-import static com.example.air.tools.StatusFlightEnum.PENDING;
+import static com.example.air.tools.StatusFlightEnum.*;
 
 public class ValidatorHandler {
 
+    private static final Set<String > STATUS_FLING = new HashSet<>(Set.of(DELAYED.name(),ACTIVE.name(), PENDING.name(), COMPLETED.name()));
 
     public static void validatorAirCompanyDtoRq(AirCompanyDtoRQ rq) {
         Objects.requireNonNull(rq, "AirCompanyDtoRQ must not be null");
@@ -36,7 +38,7 @@ public class ValidatorHandler {
 
     public static void validFlightDtoRq(FlightDtoRQ rq) {
         Objects.requireNonNull(rq, "FlightDtoRQ must not be null");
-        if (!PENDING.name().equals(rq.getFlightStatus())) {
+        if (!PENDING.equals(rq.getFlightStatus())) {
             throw new IllegalArgumentException("Invalid value for flightStatus: " + rq.getFlightStatus() +
                     ", please use this value: PENDING");
         }
@@ -57,8 +59,7 @@ public class ValidatorHandler {
         Objects.requireNonNull(rq, "ChangeStatusFlightRq must not be null");
         Objects.requireNonNull(rq.getFlightId(), "flightId must not be null");
         Objects.requireNonNull(rq.getStatusFlight(), "statusFlight must not be null");
-        if (Arrays.stream(StatusFlightEnum.values())
-                .noneMatch(status -> status.name().equals(rq.getStatusFlight()))) {
+        if(!STATUS_FLING.contains(rq.getStatusFlight().getStatus())) {
             throw new IllegalArgumentException("Invalid value for statusFlight, " +
                     "please use these status values [DELAYED, ACTIVE, PENDING, COMPLETED]");
         }

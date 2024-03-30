@@ -57,6 +57,24 @@ ENTRYPOINT ["java", "-jar", "app.jar"]
 2. #### Open Postman, and import this collection to it  
    ![image](https://github.com/Zingerd/air/assets/50172465/b70fe17e-0d47-4bd3-871d-b97ceb120b89)
 #### After that you have requests
+
+# Table of describe requests
+
+| Request                                       |              Request Type              | Description                                                                                                                                                                                          |
+|-----------------------------------------------|:--------------------------------------:|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| /api/air/companies/{id}                       |  <span style="color:green">GET</span>  | Get information about a specific Air Company (CRUD)                                                                                                                                                  |
+| /api/air/companies                            |  <span style="color:green">GET</span>  | Get information about all Air Companies (CRUD)                                                                                                                                                       |
+| /api/air/companies                            | <span style="color:orange">POST</span> | Create new Air Company(CRUD)                                                                                                                                                                         |
+| /api/air/companies/{id}                       |  <span style="color:gray">PUT</span>   | Update information about Air Companies (CRUD)                                                                                                                                                        |
+| /api/air/companies/{id}                       | <span style="color:red">DELETE</span>  | Delete Air Companies (CRUD)                                                                                                                                                                          |
+| /api/airplanes/move/                          | <span style="color:orange">POST</span> | Endpoint to move airplanes between companies                                                                                                                                                         |
+| /api/companies/{companyName}/flights/{status} |  <span style="color:green">GET</span>  | Endpoint to find all Air Company Flights by status                                                                                                                                                   |
+| /api/flights/active                           |  <span style="color:green">GET</span>  | Endpoint to find all Flights in ACTIVE status and started more than 24 hours ago;                                                                                                                    |
+| /api/airplanes/add                            | <span style="color:orange">POST</span> | Endpoint to add new Airplane                                                                                                                                                                         |
+| /api/flights/add                              | <span style="color:orange">POST</span> | Endpoint to add new Flight (set status to PENDING)                                                                                                                                                   |
+| /api/flights/change-status                    | <span style="color:orange">POST</span> | Endpoint to change Flight status:<br/> if status to change is DELAYED – set delay started at<br/>if status to change is ACTIVE – set started at<br/> if status to change is COMPLETED – set ended at |
+| /api/flights/change-status                    |  <span style="color:green">GET</span>  | Endpoint to find all Flights in COMPLETED status and difference between started and ended time is bigger than the estimated flight time                                                              |
+
 # SETUP SQL
    #### *When running docker-compose, it automatically creates a DB and all necessary tables with pre-filled test data located in* 
     /data/initTable.sql folder

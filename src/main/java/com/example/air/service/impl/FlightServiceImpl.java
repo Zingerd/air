@@ -22,9 +22,6 @@ import static com.example.air.tools.StatusFlightEnum.*;
 @Service
 @Log4j2
 public class FlightServiceImpl implements FlightService {
-    public static final String DELAYED_STATUS = "DELAYED";
-    public static final String ACTIVE_STATUS = "ACTIVE";
-    public static final String COMPLETED_STATUS = "COMPLETED";
     private final FlightRepository flightRepository;
 
     private final ModelMapper modelMapper;
@@ -55,15 +52,15 @@ public class FlightServiceImpl implements FlightService {
                 .orElseThrow(() -> new NotFoundException("Flight not found"));
 
         switch (rq.getStatusFlight()) {
-            case DELAYED_STATUS:
+            case DELAYED:
                 flight.setFlightStatus(DELAYED.name());
                 flight.setDelayStartedAt(new Date());
                 break;
-            case ACTIVE_STATUS:
+            case ACTIVE:
                 flight.setFlightStatus(ACTIVE.name());
                 flight.setStartedAt(new Date());
                 break;
-            case COMPLETED_STATUS:
+            case COMPLETED:
                 flight.setFlightStatus(COMPLETED.name());
                 flight.setEndedAt(new Date());
                 break;
